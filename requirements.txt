@@ -1,0 +1,13 @@
+pandas>=2.1.1
+torch>=2.5.0
+tqdm>=4.66.1
+openai>=1.30.3
+transformers>=4.44.2
+evaluate>=0.4.2
+nltk>=3.8.1
+matplotlib
+datasets
+fuzzywuzzy[speedup]
+rouge-score
+accelerate
+bitsandbytes
