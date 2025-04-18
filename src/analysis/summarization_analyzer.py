@@ -29,11 +29,13 @@ class SummarizationAnalyzer:
             model_name = details[2]
             top_k = details[3]
             baseline = True if len(details) > 4 and 'baseline' in details[4] else False
+            global_top_k = True if len(details) > 4 and 'global' in details[4] else False
             if model_name not in model_metadata:
                 model_metadata[model_name] = []
-            model_metadata[model_name].append({'top_k': top_k, 'baseline': baseline, 'results_dir': dir})
+            model_metadata[model_name].append({'top_k': top_k, 'baseline': baseline, 'global': global_top_k,
+                                               'results_dir': dir})
         for model_name, settings in model_metadata.items():
-            settings = [setting for setting in settings if not setting['baseline']]
+            settings = [setting for setting in settings if not setting['baseline'] and not setting['global']]
             settings = sorted(settings, key=lambda x: int(x['top_k']))
             model_metadata[model_name] = settings
         return model_metadata

@@ -8,6 +8,7 @@ import torch
 from const import qa_outputs_dir, cache_dir
 from src.handler.exit_handler import EXIT
 from src.utils.model_pass import get_lm_response
+from src.utils.results_io_util import get_source_dataset
 from src.loader.super_natural_instructions_loader import SuperNaturalInstructionsLoader
 from src.metrics.qa_precision_score import QAPrecisionScore
 from src.models.model import LanguageModel
@@ -46,8 +47,8 @@ def execute(data_loader, prompt_util, tokenizer, model, model_name, dataset_name
     if 'gpt' not in model_name and 'gemini' not in model_name:
         model.generation_config.pad_token_ids = tokenizer.pad_token_id
         model.generation_config.pad_token_id = tokenizer.pad_token_id
-    results = {'task_file': [], 'instance_number': [], 'input':[], 'reference': []}
-    metrics = {'task_file': [], 'instance_number': []}
+    results = {'task_file': [], 'instance_number': [], 'root_dataset': [], 'input': [], 'reference': []}
+    metrics = {'task_file': [], 'instance_number': [], 'root_dataset': []}
     for question_id in prompt_util.questions:
         results[question_id] = []
         metrics[question_id] = []
@@ -64,8 +65,10 @@ def execute(data_loader, prompt_util, tokenizer, model, model_name, dataset_name
             for i, instance in enumerate(batch):
                 results['task_file'].append(instance['task_file'])
                 results['instance_number'].append(instance['instance_number'])
+                results['root_dataset'].append(get_source_dataset(instance['task_file']))
                 metrics['task_file'].append(instance['task_file'])
                 metrics['instance_number'].append(instance['instance_number'])
+                metrics['root_dataset'].append(get_source_dataset(instance['task_file']))
                 results['input'].append(instance['input'])
                 results['reference'].append(instance['output'])
                 for j, key in enumerate(prompt_util.questions):

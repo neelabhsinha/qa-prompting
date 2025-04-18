@@ -8,7 +8,7 @@ from src.prompts.qa_prompts import QuestionAnsweringPrompt
 
 
 class SummarizationPrompt:
-    def __init__(self, model_name, baseline=False, top_k=5):
+    def __init__(self, model_name, baseline=False, top_k=5, global_top_k=False):
         self.top_k_questions = pd.read_csv(f'{qa_outputs_dir}/{model_name}/top_k_columns.csv',
                                            index_col='domain')
         self.top_k_questions['top_k_columns'] = self.top_k_questions['top_k_columns'].apply(lambda x: x.split(', '))
@@ -18,6 +18,7 @@ class SummarizationPrompt:
         self.questions = QuestionAnsweringPrompt().questions
         self.top_k = top_k
         self.baseline = baseline
+        self.global_top_k = global_top_k
         if self.baseline and top_k > 0:
             raise ValueError("Baseline should not be used with top_k > 0")
         if top_k > 0:
@@ -45,11 +46,14 @@ class SummarizationPrompt:
         return prompt
 
     def get_prompt(self, text, task_file, domain):
-        try:
-            top_k_questions = self.top_k_questions.loc[domain, 'top_k_columns']
-        except KeyError:
-            domain = domain.split(' -> ')[0]
-            top_k_questions = self.top_k_questions.loc[domain, 'top_k_columns']
+        if self.global_top_k:
+            top_k_questions = self.top_k_questions.loc['global', 'top_k_columns']
+        else:
+            try:
+                top_k_questions = self.top_k_questions.loc[domain, 'top_k_columns']
+            except KeyError:
+                domain = domain.split(' -> ')[0]
+                top_k_questions = self.top_k_questions.loc[domain, 'top_k_columns']
         top_k_questions = top_k_questions[:self.top_k] if top_k_questions else []
         prompt_elements_for_task = self.prompt_elements[task_file]
         if not self.baseline:

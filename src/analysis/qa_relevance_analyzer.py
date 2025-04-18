@@ -52,10 +52,13 @@ class QARelevanceAnalyzer:
     def get_top_k_columns(grouped_stats_df, k=10):
         # get top_k columns for each row
         result = {'domain': [], 'top_k_columns': []}
+        global_top_k_columns = grouped_stats_df.mean().nlargest(k).index
         for index, row in grouped_stats_df.iterrows():
             top_k_columns = row.nlargest(k).index
             result['domain'].append(index)
             result['top_k_columns'].append(', '.join(top_k_columns))
+        result['domain'].append('global')
+        result['top_k_columns'].append(', '.join(global_top_k_columns))
         top_k_df = pd.DataFrame(result)
         return top_k_df
 

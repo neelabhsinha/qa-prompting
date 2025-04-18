@@ -12,10 +12,10 @@ from src.prompts.summarization_prompt import SummarizationPrompt
 from src.utils.model_pass import get_lm_response
 from src.loader.super_natural_instructions_loader import SuperNaturalInstructionsLoader
 from src.models.model import LanguageModel
-from src.utils.results_io_util import write_results
+from src.utils.results_io_util import write_results, get_source_dataset
 
 
-def generate_summary(model_name, batch_size, instance_per_task=50000, top_k=5, baseline=False, checkpoint=None):
+def generate_summary(model_name, batch_size, instance_per_task=50000, top_k=5, baseline=False, checkpoint=None, global_top_k=False):
     parameters_dict = {'model_name': model_name, 'instance_per_task': instance_per_task, 'checkpoint': checkpoint,
                        'top_k': top_k}
     print('Parameters -')
@@ -34,8 +34,9 @@ def generate_summary(model_name, batch_size, instance_per_task=50000, top_k=5, b
     elif 'gemini' in model_name:
         model_name = 'google/' + model_name
     name = checkpoint if checkpoint is not None else ('pretrained--' + model_name.replace('/', '--'))
-    prompt_util = SummarizationPrompt(name, baseline, top_k)
+    prompt_util = SummarizationPrompt(name, baseline, top_k, global_top_k)
     name += f'--{top_k}' + ('--baseline' if baseline else '')
+    name += f'--global' if global_top_k else ''
     results_path = f'{summary_outputs_dir}/{name}'
     results_df = execute(data_loader, prompt_util, tokenizer, model, model_name,
                          'Super Natural Instructions', top_k, baseline)
@@ -82,6 +83,7 @@ def execute(data_loader, prompt_util, tokenizer, model, model_name, dataset_name
                                                                               rouge_scores):
                 results['task_file'].append(task_file)
                 results['instance_number'].append(instance_number)
+                results['root_dataset'].append(get_source_dataset(task_file))
                 results['input'].append(inp)
                 results['reference'].append(ref)
                 results['candidate'].append(candidate)
