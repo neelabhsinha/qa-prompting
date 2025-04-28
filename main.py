@@ -7,6 +7,7 @@ from src.analysis.summarization_analyzer import SummarizationAnalyzer
 from src.analysis.super_natural_instructions_analyzer import SuperNaturalInstructionsAnalyzer
 
 from src.utils.qa_generation import generate_answers
+from src.utils.compute_results import compute_metrics
 from src.utils.summary_generation import generate_summary
 
 
@@ -55,6 +56,8 @@ def get_args():
     
     parser.add_argument('--baseline', action='store_true', default=False,
                         help='Use this flag to generate summaries without ICL examples and questions.')
+    parser.add_argument('--global_top_k', action='store_true', default=False,
+                        help='Use this flag to use the same top_k questions for all domains.')
 
     return parser.parse_args()
 
@@ -72,7 +75,9 @@ if __name__ == '__main__':
         analyzer = QARelevanceAnalyzer()
         analyzer.collect_all_results()
     if args.task == 'summary_generate':
-        generate_summary(args.model_name, args.batch_size, args.instance_per_task, args.top_k, args.baseline, ckp)
+        generate_summary(args.model_name, args.batch_size, args.instance_per_task, args.top_k, args.baseline, ckp, args.global_top_k)
+    if args.task == 'compute_metrics':
+        compute_metrics(force_recompute=False)
     if args.task == 'analyze_summarization':
         analyzer = SummarizationAnalyzer(metric=args.metric)
         analyzer.save_results()

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -J Generate
 #SBATCH -N1 --ntasks-per-node=1
-#SBATCH --gres=gpu:A100:1
-#SBATCH --mem-per-gpu=40GB
+#SBATCH --gres=gpu:H200:1
+#SBATCH --mem-per-gpu=80GB
 #SBATCH -t5:00:00
 #SBATCH -ologs/Analysis-%j.out
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -36,6 +36,7 @@ while [ "$#" -gt 0 ]; do
     --metric) metric="$2"; shift 2 ;;
     --checkpoint) checkpoint="$2"; shift 2 ;;
     --baseline) baseline_flag="--baseline"; shift 1 ;; # Add the baseline flag
+    --global_top_k) global_top_k="--global_top_k"; shift 1 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
@@ -46,6 +47,7 @@ cmd="srun -u python -u main.py --batch_size $batch_size --task $task --model_nam
 # Add optional flags
 [[ "$top_k" != "None" ]] && cmd+=" --top_k $top_k"
 [[ -n "$baseline_flag" ]] && cmd+=" $baseline_flag" # Append baseline flag if set
+[[ -n "$global_top_k" ]] && cmd+=" $global_top_k" # Append global_top_k flag if set
 
 # Execute the constructed command
 eval $cmd

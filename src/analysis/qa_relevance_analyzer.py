@@ -18,7 +18,7 @@ class QARelevanceAnalyzer:
         complete_file_path = os.path.join(qa_outputs_dir, results_path, 'outputs.csv')
         outputs_df = pd.read_csv(complete_file_path)
         metrics_df = pd.read_csv(os.path.join(qa_outputs_dir, results_path, 'metrics.csv'))
-        exclude_columns = ['task_file', 'instance_number', 'input', 'reference']
+        exclude_columns = ['task_file', 'instance_number', 'root_dataset', 'input', 'reference']
         columns_to_check = [col for col in outputs_df.columns if col not in exclude_columns]
         total_score = metrics_df[columns_to_check].sum(axis=1)
         metrics_df['total_score'] = total_score
@@ -40,7 +40,7 @@ class QARelevanceAnalyzer:
     def analyze_model(self, results_path):
         complete_file_path = os.path.join(qa_outputs_dir, results_path, 'metrics.csv')
         metrics_df = pd.read_csv(complete_file_path)
-        exclude_columns = ['task_file', 'instance_number']
+        exclude_columns = ['task_file', 'instance_number', 'root_dataset']
         columns_to_check = [col for col in metrics_df.columns if col not in exclude_columns]
         metrics_df = metrics_df.loc[~(metrics_df[columns_to_check] == 0.0).all(axis=1)]
         metrics_df['domains'] = metrics_df['task_file'].map(self._metadata['domains'])

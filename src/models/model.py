@@ -29,7 +29,8 @@ class LanguageModel:
             model = Gemini(model_name=self.model_name)
         else:
             model = AutoModelForCausalLM.from_pretrained(self.model_name, cache_dir=cache_dir, device_map='auto',
-                                                         trust_remote_code=True, torch_dtype=torch.bfloat16)
+                                                         trust_remote_code=True, torch_dtype=torch.bfloat16,
+                                                         token=True)
             value_counts = Counter(model.hf_device_map.values())
             total_values = sum(value_counts.values())
             value_percentages = {value: (count / total_values) * 100 for value, count in value_counts.items()}

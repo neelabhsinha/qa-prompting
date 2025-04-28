@@ -10,6 +10,11 @@ class BertScore:
         self.batch_size = batch_size
 
     def get_score(self, predictions, references):
-        scores = self._bert_score.compute(predictions=predictions, references=references, verbose=self._verbose,
-                                          model_type=self._model_type, batch_size=self.batch_size)
+        scores = self._bert_score.compute(
+            predictions=predictions,
+            references=references,
+            verbose=self._verbose,
+            model_type=self._model_type,
+            batch_size=self.batch_size
+        )
         return scores

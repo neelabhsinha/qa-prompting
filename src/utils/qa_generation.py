@@ -59,9 +59,11 @@ def execute(data_loader, prompt_util, tokenizer, model, model_name, dataset_name
         try:
             texts = [instance['input'] for instance in batch]
             prompts = prompt_util.get_prompt(texts)
-            candidate_batch = get_lm_response(prompts, model, tokenizer, model_name, max_new_tokens=32)
+            candidate_batch = get_lm_response(prompts, model, tokenizer, model_name, max_new_tokens=64)
             if 'llama' in model_name.lower():
-                candidate_batch = [candidate.split('\n')[0] for candidate in candidate_batch]
+                candidate_batch = [candidate.split('\n')[0].strip() for candidate in candidate_batch]
+            if 'mistral' in model_name.lower():
+                candidate_batch = [candidate.split('Explanation')[0].strip() for candidate in candidate_batch]
             for i, instance in enumerate(batch):
                 results['task_file'].append(instance['task_file'])
                 results['instance_number'].append(instance['instance_number'])

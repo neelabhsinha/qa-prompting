@@ -19,7 +19,7 @@ def get_lm_response(prompts, model, tokenizer, model_name, max_new_tokens=32):
         # Non-GPT/Gemini models
         device = next(model.parameters()).device
         inputs = tokenizer(prompts, padding=True, return_tensors="pt").to(device=device)
-        inputs = {key: value.to(dtype=torch.int32) for key, value in inputs.items()}
+        inputs = {key: value.to(dtype=torch.int64) for key, value in inputs.items()}
         with torch.no_grad():
             outputs = model.generate(**inputs, max_new_tokens=max_new_tokens)
         candidate_batch = tokenizer.batch_decode(outputs, skip_special_tokens=True)
