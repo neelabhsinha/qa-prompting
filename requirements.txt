@@ -11,5 +11,4 @@ fuzzywuzzy[speedup]
 rouge-score
 accelerate
 bitsandbytes
-git+https://github.com/AIPHES/emnlp19-moverscore.git
 bert-score

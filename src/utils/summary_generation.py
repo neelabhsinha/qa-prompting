@@ -15,7 +15,8 @@ from src.models.model import LanguageModel
 from src.utils.results_io_util import write_results, get_source_dataset
 
 
-def generate_summary(model_name, batch_size, instance_per_task=50000, top_k=5, baseline=False, checkpoint=None, global_top_k=False):
+def generate_summary(model_name, batch_size, instance_per_task=50000, top_k=5, baseline=False, checkpoint=None,
+                     global_top_k=False):
     parameters_dict = {'model_name': model_name, 'instance_per_task': instance_per_task, 'checkpoint': checkpoint,
                        'top_k': top_k}
     print('Parameters -')
@@ -62,7 +63,8 @@ def execute(data_loader, prompt_util, tokenizer, model, model_name, dataset_name
             instance_numbers = [instance['instance_number'] for instance in batch]
             prompts = [prompt_util.get_prompt(text, task_file, domain) for text, task_file, domain
                        in zip(texts, task_files, domains)]
-            candidate_batch_raw = get_lm_response(prompts, model, tokenizer, model_name, max_new_tokens=512 + 32 * top_k)
+            candidate_batch_raw = get_lm_response(prompts, model, tokenizer, model_name,
+                                                  max_new_tokens=512 + 32 * top_k)
             candidate_batch = []
             for candidate in candidate_batch_raw:
                 try:
