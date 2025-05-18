@@ -22,7 +22,7 @@ class SummarizationAnalyzer:
 
     @staticmethod
     def get_result_file_metadata():
-        dirs = os.listdir(summary_outputs_dir)
+        dirs = [d for d in os.listdir(summary_outputs_dir) if os.path.isdir(os.path.join(summary_outputs_dir, d))]
         model_metadata = {}
         for dir in dirs:
             details = dir.split('--')
@@ -95,28 +95,49 @@ class SummarizationAnalyzer:
             results_summary_df.to_csv(path, index=False)
             self.generate_line_graph(results_summary_df, path.replace('.csv', '.png'))
 
+    import matplotlib.pyplot as plt
+
     def generate_line_graph(self, df, path):
-        plt.figure(figsize=(14, 8), dpi=300)
-        font_size = 15
+        fig, ax = plt.subplots(figsize=(10, 6), dpi=300)  # Create fig and ax
+        font_size = 14
         plt.rc('font', size=font_size)
+
         for _, row in df.iterrows():
             domain = row['domain']
+            if domain == 'Scientific Research Papers':
+                domain = 'Research'
             x_values = df.columns[1:]
-            y_values = row[x_values].values
-            plt.plot(x_values, y_values, label=domain, marker='o')
-        plt.xlabel('k')
-        plt.ylabel(camel_to_hyphen(self.metric))
-        plt.legend(
+            y_values = row[x_values].values * 100
+            ax.plot(
+                x_values, y_values,
+                label=domain,
+                marker='o',
+                linewidth=2
+            )
+
+        ax.set_xlabel('k', fontsize=font_size)
+        ax.set_ylabel(camel_to_hyphen(self.metric).upper() + ' Mean (%)', fontsize=font_size)
+        ax.legend(
             title="Domain",
-            loc='lower center',  # Position the legend at the bottom
-            bbox_to_anchor=(0.5, -0.2),  # Center the legend below the plot
-            ncol=len(df['domain'].unique()),  # Display legend entries in one row
+            loc='lower center',
+            bbox_to_anchor=(0.5, -0.25),
+            ncol=len(df['domain'].unique()),
+            fontsize=font_size - 2,
+            title_fontsize=font_size - 1
         )
-        plt.grid(True)
+
+        # Set major and minor ticks and grids
+        ax.minorticks_on()  # Turn on minor ticks
+        ax.grid(which='major', linestyle='-', linewidth=0.8, color='gray')
+        ax.grid(which='minor', linestyle=':', linewidth=0.5, color='lightgray')
+
+        ax.tick_params(axis='both', which='major', labelsize=font_size)
+        ax.tick_params(axis='both', which='minor', labelsize=font_size - 2)
+
         plt.tight_layout()
-        plt.savefig(path, format='png')
-        plt.savefig(path.replace('.png', '.pdf'), format='pdf')
-        plt.close()
+        fig.savefig(path, format='png')
+        fig.savefig(path.replace('.png', '.pdf'), format='pdf')
+        plt.close(fig)
 
     def save_results(self):
         self.tabulate_all_results()

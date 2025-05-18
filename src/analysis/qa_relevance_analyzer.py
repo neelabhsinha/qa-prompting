@@ -87,11 +87,39 @@ class QARelevanceAnalyzer:
         plt.savefig(os.path.join(qa_outputs_dir, results_path, f'{output_prefix}.pdf'), format='pdf')
         plt.close()
 
+    @staticmethod
+    def generate_topk_rankings(folders):
+        # Define the fixed column order
+        fixed_columns = [
+            'topic', 'key_pts', 'entities', 'timeline', 'details',
+            'conclude', 'tone', 'challenges', 'insights', 'audience'
+        ]
+        all_rankings = []
+        for file_path in folders:
+            df = pd.read_csv(os.path.join(qa_outputs_dir, file_path, 'top_k_columns.csv'))
+            file_ranking = {}
+            global_row = df[df['domain'] == 'global'].iloc[0]
+            topk_list = [col.strip() for col in global_row['top_k_columns'].split(',')]
+            for col in fixed_columns:
+                if col in topk_list:
+                    rank = topk_list.index(col) + 1
+                else:
+                    rank = None
+                file_ranking[col] = rank
+            file_ranking['file_name'] = os.path.basename(file_path)
+            all_rankings.append(file_ranking)
+        final_df = pd.DataFrame(all_rankings)
+        final_df = final_df.set_index('file_name')  # Set filenames as row indices
+        return final_df
+
     def collect_all_results(self):
-        for results_path in os.listdir(qa_outputs_dir):
-            if os.path.isdir(os.path.join(qa_outputs_dir, results_path)):
-                grouped_stats_df = self.analyze_model(results_path)
-                top_k_df = self.get_top_k_columns(grouped_stats_df)
-                self.save_results(grouped_stats_df, top_k_df, results_path)
-                self.save_top_k_examples(results_path)
-                self.plot_dataframe_bars(grouped_stats_df, results_path, f'grouped_stats_graph')
+        # for results_path in os.listdir(qa_outputs_dir):
+        #     if os.path.isdir(os.path.join(qa_outputs_dir, results_path)):
+        #         grouped_stats_df = self.analyze_model(results_path)
+        #         top_k_df = self.get_top_k_columns(grouped_stats_df)
+        #         self.save_results(grouped_stats_df, top_k_df, results_path)
+        #         self.save_top_k_examples(results_path)
+        #         self.plot_dataframe_bars(grouped_stats_df, results_path, f'grouped_stats_graph')
+        all_models = os.listdir(qa_outputs_dir)
+        question_ranks = self.generate_topk_rankings(all_models)
+        question_ranks.to_csv(os.path.join(qa_outputs_dir, 'question_rankings.csv'), index=True)
