@@ -5,8 +5,6 @@
 #SBATCH --mem-per-gpu=80GB
 #SBATCH -t5:00:00
 #SBATCH -ologs/Analysis-%j.out
-#SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=nsinha68@gatech.edu
 
 export PYTHONUNBUFFERED=TRUE
 source ~/.bashrc

@@ -1,8 +1,8 @@
 project_root = '.'  # project root directory
-project_name = 'open-lm-evaluation-framework'  # project name
+project_name = 'qa-prompting'  # project name
 
 # Dataset location (change the directory path here to the dataset)
-source_dataset_dir = '/home/hice1/nsinha68/scratch/dataset/super-natural-instructions/source_data/source_data'
+source_dataset_dir = 'ADD PATH TO YOUR DATASET HERE'  # source dataset directory
 
 # Directories (edit the source_dataset_dir as needed)
 metadata_dir = f'{project_root}/metadata'  # metadata directory
@@ -16,4 +16,3 @@ dataset_analysis_dir = f'{project_root}/dataset_analysis'
 
 tasks = ['qa_generate', 'analyze_dataset', 'analyze_qa_relevance', 'summary_generate', 'analyze_summarization',
          'compute_metrics']  # list of available tasks
-# tasks to perform
