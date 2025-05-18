@@ -1,4 +1,4 @@
-# QA Prompting: Improving Summarization using Question-Answering in Large Language Models
+# QA-prompting: Improving Summarization with Large Language Models using Question-Answering
 
 ---
 
@@ -7,6 +7,8 @@
 This repository contains the codebase for generating summaries and performing analyses using question-answering (QA) prompting techniques. It supports multiple tasks such as dataset analysis, QA relevance evaluation, summary generation, and summarization analysis. The project leverages HuggingFace models and provides tools to streamline the evaluation and experimentation processes.
 
 ---
+
+Abstract: Language Models (LMs) have revolutionized natural language processing, enabling high-quality text generation through prompting and in-context learning. However, models often struggle with long-context summarization due to positional biases, leading to suboptimal extraction of critical information. There are techniques to improve this with fine-tuning, pipelining, or using complex techniques, which have their own challenges. To solve these challenges, we propose QA-prompting -- a simple QA-driven method for summarization that leverages relevant question-answering prior to summary generation. Our method enhances relevant context of text to improve summarization and mitigates positional biases without requiring fine-tuning or pipelining, while also being efficient by utilizing small-scale LMs and only one LM call per instance. Experiments on multiple datasets belonging to different domains using ten state-of-the-art pre-trained models demonstrate that QA-prompting outperforms baseline and other state-of-the-art methods, achieving up to $29\%$ improvement in ROUGE scores. This provides an effective and scalable solution for summarization and highlights the importance of domain-specific question selection for optimal performance.
 
 ## Table of Contents
 
@@ -37,6 +39,8 @@ Set your HuggingFace API key to access pre-trained models:
 export HF_API_KEY='your_huggingface_api_key_here'
 ```
 
+### Step 4: Download [super-natural-instructions](https://instructions.apps.allenai.org) dataset and add the path in `const.py`.
+
 ---
 
 ## Usage
@@ -57,10 +61,7 @@ This project supports models from HuggingFace's library. The specific model can 
 ### Metrics
 
 The repository supports the following evaluation metrics:
-- ROUGE (`rouge1`, `rouge2`, `rougeL`)
-Future additions -
-- METEOR
-- BERTScore (`precision`, `recall`, `f1`)
+- ROUGE (`rouge1`, `rouge2`, `rougeL`, `BERTSore`)
 
 ### Configurations
 
